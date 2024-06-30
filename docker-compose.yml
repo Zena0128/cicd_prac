@@ -1,0 +1,51 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./config/web/Dockerfile
+    image: 644560040450.dkr.ecr.us-east-1.amazonaws.com/mutsa-deploy:latest
+    command: ["./start.sh"] # 서버 실행
+    ports:
+      - "8000:8000"
+    restart: always
+    volumes:
+      - .:/app
+      - ./static:/app/static
+      - ./media:/app/media # media가 있으면
+    environment:
+      - DJANGO_SETTINGS_MODULE=modelproject.settings
+    env_file:
+      - .env
+    networks:
+      - server
+    platform: linux/amd64
+
+  nginx:
+    build: ./config/nginx # 해당 경로의 Dockerfile을 사용해 이미지 빌드하겠다
+    image: 644560040450.dkr.ecr.us-east-1.amazonaws.com/mutsa-deploy-nginx:latest
+    volumes:
+      - ./static:/static
+      - ./media:/media # media가 있으면
+      - ./cert/certbot/conf:/etc/letsencrypt # 이 부분
+      - ./cert/certbot/www:/var/www/certbot # 이 부분
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
+    networks:
+      - server
+    platform: linux/amd64
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    restart: unless-stopped
+    volumes:
+      - ./cert/certbot/conf:/etc/letsencrypt
+      - ./cert/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+networks:
+  server:
