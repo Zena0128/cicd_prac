@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: ./config/web/Dockerfile
-    image: 644560040450.dkr.ecr.us-east-1.amazonaws.com/mutsa-deploy:latest
+    image: 730335419749.dkr.ecr.us-east-1.amazonaws.com/deploy-web:latest
     command: ["./start.sh"] # 서버 실행
     ports:
       - "8000:8000"
@@ -23,7 +23,7 @@ services:
 
   nginx:
     build: ./config/nginx # 해당 경로의 Dockerfile을 사용해 이미지 빌드하겠다
-    image: 644560040450.dkr.ecr.us-east-1.amazonaws.com/mutsa-deploy-nginx:latest
+    image: 730335419749.dkr.ecr.us-east-1.amazonaws.com/deploy-nginx:latest
     volumes:
       - ./static:/static
       - ./media:/media # media가 있으면
