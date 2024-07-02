@@ -58,8 +58,8 @@ jobs:
             docker rm $(docker ps -a -q)
             pwd
             ls
-            cd /home/ubuntu/cicd-prac/
+            cd /home/ubuntu/cicd_prac/
             git pull origin main
             aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 730335419749.dkr.ecr.us-east-1.amazonaws.com
-            docker-compose pull  # Pull the latest images on EC2
-            docker-compose up -d  # Run the containers on EC2
+            docker compose pull  # Pull the latest images on EC2
+            docker compose up -d  # Run the containers on EC2
